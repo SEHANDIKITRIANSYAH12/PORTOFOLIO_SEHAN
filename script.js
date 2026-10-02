@@ -198,28 +198,30 @@ function initDockMagnification() {
   const maxScale = 1.35;
   const maxDistance = 100; // range of magnification influence
 
-  dockBar.addEventListener('mousemove', (e) => {
-    const mouseX = e.clientX;
+  if (!window.matchMedia('(pointer: coarse)').matches) {
+    dockBar.addEventListener('mousemove', (e) => {
+      const mouseX = e.clientX;
 
-    items.forEach((item) => {
-      const rect = item.getBoundingClientRect();
-      const itemCenterX = rect.left + rect.width / 2;
-      const distance = Math.abs(mouseX - itemCenterX);
+      items.forEach((item) => {
+        const rect = item.getBoundingClientRect();
+        const itemCenterX = rect.left + rect.width / 2;
+        const distance = Math.abs(mouseX - itemCenterX);
 
-      if (distance < maxDistance) {
-        const scale = 1 + (maxScale - 1) * Math.cos((distance / maxDistance) * (Math.PI / 2));
-        item.style.transform = `translateY(-${(scale - 1) * 16}px) scale(${scale})`;
-      } else {
+        if (distance < maxDistance) {
+          const scale = 1 + (maxScale - 1) * Math.cos((distance / maxDistance) * (Math.PI / 2));
+          item.style.transform = `translateY(-${(scale - 1) * 16}px) scale(${scale})`;
+        } else {
+          item.style.transform = 'translateY(0) scale(1)';
+        }
+      });
+    });
+
+    dockBar.addEventListener('mouseleave', () => {
+      items.forEach((item) => {
         item.style.transform = 'translateY(0) scale(1)';
-      }
+      });
     });
-  });
-
-  dockBar.addEventListener('mouseleave', () => {
-    items.forEach((item) => {
-      item.style.transform = 'translateY(0) scale(1)';
-    });
-  });
+  }
 
   // Dock item click active indicator toggle
   items.forEach((item) => {
